@@ -5,9 +5,9 @@
     <span>({{ formatBytes('Safely calculate the weight of any text snippet.') }})</span>
   </h2>
 
-  <p>👇 Snippet size: {{ formattedSize }}</p>
+  <snippet v-for="idx in snippetPool" :key="idx" :id="idx" />
 
-  <textarea v-model="source" />
+  <button @click="snippetPool++">Compare with another snippet</button>
 
   <footer>
     <p>By <strong>safely</strong>, we mean that none of your text ever leaves the browser.</p>
@@ -18,36 +18,20 @@
 </template>
 
 <script>
-function formatBytes(bytes, decimals) {
-  if (bytes == 0) return '0 Bytes'
-  const k = 1024
-  const dm = decimals || 2
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
-}
+import { formatBytes, stringSize } from './bytes'
+import Snippet from './components/Snippet.vue'
 
 export default {
   name: 'App',
+  components: { Snippet },
   data() {
     return {
-      source: '',
-    }
-  },
-  computed: {
-    rawSize() {
-      return new Blob([this.source]).size
-    },
-    formattedSize() {
-      return formatBytes(this.rawSize)
+      snippetPool: 1,
     }
   },
   methods: {
-    formatBytes(str) {
-      return formatBytes(new Blob([str]).size)
-    },
-  }
+    formatBytes: (str) => formatBytes(stringSize(str)),
+  },
 }
 </script>
 
@@ -77,5 +61,17 @@ textarea:focus {
 span {
   color: #999;
   font-size: 60%;
+}
+
+button {
+  background: none;
+  border: 1px solid #333;
+  margin-top: 32px;
+  padding: 8px;
+  border-radius: 4px;
+}
+button:hover {
+  border-color: #222;
+  box-shadow: 0 0 1px 1px #222;
 }
 </style>
